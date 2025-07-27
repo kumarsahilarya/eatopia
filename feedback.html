@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Feedback</title>
+</head>
+<body>
+    <h1>Submit Feedback</h1>
+    <form id="feedback-form">
+        <textarea id="feedback-message" placeholder="Enter your feedback" required></textarea><br>
+        <button type="submit">Submit Feedback</button>
+    </form>
+
+    <script>
+        document.getElementById('feedback-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const message = document.getElementById('feedback-message').value;
+            const response = await fetch('/api/feedback/submit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message })
+            });
+            if (response.ok) {
+                alert("Feedback submitted!");
+            } else {
+                alert("Failed to submit feedback.");
+            }
+        };
+    </script>
+</body>
+</html>

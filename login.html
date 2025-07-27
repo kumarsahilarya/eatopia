@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Eatopia - Customer Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-black text-white flex items-center justify-center min-h-screen font-sans">
+  <div class="w-full max-w-md bg-gray-900 p-6 rounded-2xl shadow-xl">
+
+    <!-- Logo -->
+    <div class="flex justify-center mb-6">
+      <img src="IMG-20250318-WA0000 (2).jpg" alt="Eatopia Logo" class="w-32 h-32 object-contain">
+    </div>
+
+    <!-- Title -->
+    <h2 class="text-2xl font-bold text-center text-yellow-400 mb-2">Customer Login</h2>
+    <p class="text-sm text-center text-gray-400 mb-6">Welcome back to Eatopia</p>
+
+    <!-- Login Form -->
+    <form class="space-y-4">
+
+      <input type="email" name="email" placeholder="Email Address" required
+        class="w-full p-2 bg-gray-800 text-white rounded-lg outline-none focus:ring-2 focus:ring-yellow-400" />
+
+      <input type="password" name="password" placeholder="Password" required
+        class="w-full p-2 bg-gray-800 text-white rounded-lg outline-none focus:ring-2 focus:ring-yellow-400" />
+
+      <button type="submit"
+        class="w-full bg-yellow-400 text-black font-semibold py-2 px-4 rounded-lg hover:bg-yellow-300 transition">
+        Log In
+      </button>
+
+    </form>
+
+    <p class="text-center text-sm text-gray-500 mt-4">Don't have an account?
+      <a href="signup.html" class="text-yellow-400 hover:underline">Sign up</a>
+    </p>
+  </div>
+  <script>
+  const form = document.querySelector('form');
+
+  form.addEventListener('submit', async function (event) {
+    event.preventDefault();
+
+    const email = form.email.value;
+    const password = form.password.value;
+
+    try {
+      const response = await fetch("http://localhost:5000/api/customer/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        // ✅ Login successful
+        alert("Login successful!");
+        localStorage.setItem("customerId", data.customerId); // Store customer ID
+        window.location.href = "customer-dashboard.html";
+      } else {
+        // ❌ Login failed
+        if (response.status === 404) {
+          alert("User not found. Please sign up first.");
+          window.location.href = "signup.html";
+        } else if (response.status === 401) {
+          alert("Incorrect password. Please try again.");
+        } else {
+          alert("Something went wrong. Please try again later.");
+        }
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      alert("Network error. Please try again later.");
+    }
+  });
+</script>
+
+</body>
+</html>

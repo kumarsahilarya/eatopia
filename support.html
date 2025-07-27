@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Support</title>
+</head>
+<body>
+    <h1>Submit Support Request</h1>
+    <form id="support-form">
+        <textarea id="support-message" placeholder="Describe your issue" required></textarea><br>
+        <button type="submit">Submit Request</button>
+    </form>
+
+    <script>
+        document.getElementById('support-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const message = document.getElementById('support-message').value;
+            const response = await fetch('/api/support/submit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message })
+            });
+            if (response.ok) {
+                alert("Support request submitted!");
+            } else {
+                alert("Failed to submit request.");
+            }
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Eatopia - Kitchen Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-black text-white flex items-center justify-center min-h-screen font-sans">
+  <div class="w-full max-w-md bg-gray-900 p-6 rounded-2xl shadow-xl">
+    
+    <div class="flex justify-center mb-6">
+      <img src="IMG-20250318-WA0000 (2).jpg" alt="Logo" class="w-32 h-32 object-cover rounded-full border-2 border-yellow-400" />
+    </div>
+
+    <h2 class="text-2xl font-bold text-center text-yellow-400 mb-2">Kitchen Login</h2>
+    <p class="text-sm text-center text-gray-400 mb-6">Manage your kitchen dashboard</p>
+
+    <form id="loginForm" class="space-y-4">
+      <input 
+        type="email" 
+        name="email" 
+        placeholder="Email" 
+        required 
+        class="w-full p-2 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" 
+      />
+      <input 
+        type="password" 
+        name="password" 
+        placeholder="Password" 
+        required 
+        class="w-full p-2 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" 
+      />
+      <button 
+        type="submit" 
+        class="w-full bg-yellow-400 text-black font-semibold py-2 rounded-lg hover:bg-yellow-300 transition">
+        Log In
+      </button>
+    </form>
+
+    <p class="text-center text-sm text-gray-500 mt-4">
+      Don’t have a kitchen account?
+      <a href="kitchen-register.html" class="text-yellow-400 hover:underline">Register here</a>
+    </p>
+  </div>
+
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(e.target);
+      const data = Object.fromEntries(formData.entries());
+
+      try {
+        const res = await fetch("http://localhost:5000/api/kitchen/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data)
+        });
+
+        const result = await res.json();
+
+        if (res.ok && result.success) {
+          localStorage.setItem("kitchenId", result.kitchenId); // ✅ Save ID
+          window.location.href = "kitchen-dashboard.html";    // ✅ Redirect
+        } else {
+          alert(result.message || "Invalid credentials");
+        }
+      } catch (error) {
+        console.error("Login Error:", error);
+        alert("An error occurred while logging in. Please try again.");
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Orders</title>
+</head>
+<body>
+    <h1>Orders to Prepare</h1>
+    <div id="orders"></div>
+
+    <script>
+        async function fetchOrders() {
+            const response = await fetch('/api/orders/view');
+            const orders = await response.json();
+            const ordersDiv = document.getElementById('orders');
+            ordersDiv.innerHTML = orders.map(order => `
+                <div>
+                    <span>Order ID: ${order.id}</span>
+                    <ul>${order.items.map(item => `<li>${item.name} - ${item.quantity}</li>`).join('')}</ul>
+                </div>
+            `).join('');
+        }
+
+        fetchOrders();
+    </script>
+</body>
+</html>

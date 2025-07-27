@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Checkout</title>
+</head>
+<body>
+    <h1>Checkout</h1>
+    <form id="checkout-form">
+        <label for="upiId">Enter UPI ID:</label>
+        <input type="text" id="upiId" name="upiId" required>
+        <button type="submit">Pay</button>
+    </form>
+
+    <script>
+        document.getElementById('checkout-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const upiId = document.getElementById('upiId').value;
+            const response = await fetch('/api/checkout/place-order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ upiId })
+            });
+            if (response.ok) {
+                alert("Payment successful!");
+                window.location.href = '/customer-dashboard.html';
+            } else {
+                alert("Payment failed.");
+            }
+        };
+    </script>
+</body>
+</html>

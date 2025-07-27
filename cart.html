@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cart</title>
+</head>
+<body>
+    <h1>Your Cart</h1>
+    <div id="cart-items"></div>
+    <button onclick="checkout()">Proceed to Checkout</button>
+
+    <script>
+        async function fetchCartItems() {
+            const response = await fetch('/api/cart/get-items');
+            const items = await response.json();
+            const cartDiv = document.getElementById('cart-items');
+            cartDiv.innerHTML = items.map(item => `
+                <div>
+                    <span>${item.name}</span>
+                    <button onclick="updateItem(${item.id}, 'increment')">+</button>
+                    <span>${item.quantity}</span>
+                    <button onclick="updateItem(${item.id}, 'decrement')">-</button>
+                </div>
+            `).join('');
+        }
+
+        async function updateItem(itemId, action) {
+            await fetch('/api/cart/update', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ itemId, action })
+            });
+            fetchCartItems();
+        }
+
+        async function checkout() {
+            window.location.href = '/checkout.html';
+        }
+
+        fetchCartItems();
+    </script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Eatopia - Kitchen Registration</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-black text-white flex items-center justify-center min-h-screen font-sans">
+  <div class="w-full max-w-xl bg-gray-900 p-6 rounded-2xl shadow-xl">
+
+    <!-- Logo -->
+    <div class="flex justify-center mb-6">
+      <img src="IMG-20250318-WA0000 (2).jpg" alt="Eatopia Logo" class="w-32 h-32 object-contain">
+    </div>
+
+    <!-- Title -->
+    <h2 class="text-2xl font-bold text-center text-yellow-400 mb-2">Kitchen Registration</h2>
+    <p class="text-sm text-center text-gray-400 mb-6">Register your kitchen with Eatopia</p>
+
+    <!-- Form -->
+    <form id="kitchenForm" enctype="multipart/form-data" class="space-y-4">
+
+      <input type="text" name="kitchen_name" placeholder="Kitchen Name" required
+        class="w-full p-2 bg-gray-800 text-white rounded-lg outline-none focus:ring-2 focus:ring-yellow-400" />
+
+      <input type="text" name="location" placeholder="Location/City" required
+        class="w-full p-2 bg-gray-800 text-white rounded-lg outline-none focus:ring-2 focus:ring-yellow-400" />
+
+      <input type="email" name="email" placeholder="Official Email" required
+        class="w-full p-2 bg-gray-800 text-white rounded-lg outline-none focus:ring-2 focus:ring-yellow-400" />
+
+      <input type="tel" name="contact_number" placeholder="Contact Number" required
+        class="w-full p-2 bg-gray-800 text-white rounded-lg outline-none focus:ring-2 focus:ring-yellow-400" />
+
+      <input type="password" name="password" placeholder="Create Password" required
+        class="w-full p-2 bg-gray-800 text-white rounded-lg outline-none focus:ring-2 focus:ring-yellow-400" />
+
+      <input type="file" name="kitchen_photo" accept="image/*"
+        class="w-full p-2 bg-gray-800 text-white rounded-lg outline-none file:bg-yellow-400 file:text-black file:border-none" />
+
+      <button type="submit"
+        class="w-full bg-yellow-400 text-black font-semibold py-2 px-4 rounded-lg hover:bg-yellow-300 transition">
+        Register Kitchen
+      </button>
+    </form>
+
+    <p class="text-center text-sm text-gray-500 mt-4">Already registered?
+      <a href="kitchen-login.html" class="text-yellow-400 hover:underline">Log in</a>
+    </p>
+  </div>
+
+  <!-- ✅ JavaScript to handle form submission -->
+  <script>
+    document.getElementById("kitchenForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const formData = new FormData(this);
+
+      fetch("http://localhost:5000/api/kitchen/register", {
+        method: "POST",
+        body: formData,
+      })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.message) {
+          alert(data.message);
+          this.reset();
+        } else {
+          alert("Something went wrong. Please try again.");
+        }
+      })
+      .catch((err) => {
+        console.error("Error:", err);
+        alert("Server error. Please try later.");
+      });
+    });
+  </script>
+</body>
+</html>

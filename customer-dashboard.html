@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Eatopia - Customer Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-black text-white min-h-screen font-sans">
+
+  <!-- Header -->
+  <header class="flex items-center justify-between p-4 bg-gray-900 shadow-md">
+    <div class="flex items-center gap-4">
+      <img src="IMG-20250318-WA0000 (2).jpg" alt="Eatopia Logo" class="w-12 h-12 object-contain rounded-full" />
+      <h1 class="text-2xl font-bold text-yellow-400" id="welcomeTitle">Welcome to Eatopia!</h1>
+    </div>
+    <div class="flex gap-2">
+      <button onclick="window.location.href='profile.html'" class="bg-gray-800 text-yellow-300 font-semibold px-3 py-2 rounded-lg hover:bg-gray-700">Profile</button>
+      <button onclick="window.location.href='settings.html'" class="bg-gray-800 text-yellow-300 font-semibold px-3 py-2 rounded-lg hover:bg-gray-700">Settings</button>
+      <button onclick="window.location.href='feedback.html'" class="bg-gray-800 text-yellow-300 font-semibold px-3 py-2 rounded-lg hover:bg-gray-700">Feedback</button>
+      <button onclick="window.location.href='customersupport.html'" class="bg-gray-800 text-yellow-300 font-semibold px-3 py-2 rounded-lg hover:bg-gray-700">Customer Support</button>
+      <button onclick="window.location.href='logout.html'" class="bg-yellow-400 text-black font-semibold px-4 py-2 rounded-lg hover:bg-yellow-300">
+        Logout
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="p-6 space-y-10">
+
+    <!-- Available Cloud Kitchens -->
+    <section>
+      <h2 class="text-xl font-semibold mb-4 text-yellow-300">Available Cloud Kitchens</h2>
+      <div id="kitchenContainer" class="grid md:grid-cols-3 sm:grid-cols-2 gap-6">
+        <!-- Dynamic kitchen cards will appear here -->
+      </div>
+    </section>
+
+    <!-- Order History -->
+    <section>
+      <h2 class="text-xl font-semibold mb-4 text-yellow-300">Your Order History</h2>
+      <ul id="orderHistoryList" class="space-y-3">
+        <!-- Dynamic order history will appear here -->
+      </ul>
+    </section>
+
+  </main>
+
+  <script>
+    // ------------------- BACKEND DATA FETCHING -------------------
+
+    // Fetch kitchens from backend API
+    async function fetchKitchens() {
+      try {
+        const response = await fetch('/api/kitchens');
+        if (!response.ok) throw new Error('Failed to fetch kitchens');
+        return await response.json();
+      } catch (err) {
+        console.error(err);
+        return [];
+      }
+    }
+
+    // Fetch order history from backend API
+    async function fetchOrderHistory() {
+      try {
+        const response = await fetch('/api/customer/orders');
+        if (!response.ok) throw new Error('Failed to fetch order history');
+        return await response.json();
+      } catch (err) {
+        console.error(err);
+        return [];
+      }
+    }
+
+    // Fetch customer name from backend API
+    async function fetchCustomerName() {
+      try {
+        const response = await fetch('/api/customer/profile');
+        if (!response.ok) throw new Error('Failed to fetch customer profile');
+        const data = await response.json();
+        return data.name || '';
+      } catch (err) {
+        console.error(err);
+        return '';
+      }
+    }
+
+    // ------------------- RENDERING FUNCTIONS -------------------
+
+    async function updateKitchenList() {
+      const container = document.getElementById('kitchenContainer');
+      container.innerHTML = '';
+      const kitchens = await fetchKitchens();
+
+      kitchens.forEach(kitchen => {
+        const card = document.createElement('div');
+        card.className = "bg-gray-800 p-4 rounded-xl shadow hover:shadow-lg transition";
+        card.innerHTML = `
+          <h3 class="text-lg font-bold text-yellow-400">${kitchen.name}</h3>
+          <p class="text-sm text-gray-400 mb-2">Location: ${kitchen.location}</p>
+          <a href="kitchen-menu.html?kitchen=${encodeURIComponent(kitchen.name)}" class="w-full block bg-yellow-400 text-black text-center font-semibold py-2 px-4 rounded-lg hover:bg-yellow-300">
+            View Menu
+          </a>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    async function updateOrderHistory() {
+      const list = document.getElementById('orderHistoryList');
+      list.innerHTML = '';
+      const orders = await fetchOrderHistory();
+
+      orders.forEach(order => {
+        const statusColor = {
+          "Delivered": "text-green-400",
+          "Preparing": "text-yellow-400",
+          "Pending": "text-red-400"
+        }[order.status] || "text-gray-400";
+
+        const li = document.createElement('li');
+        li.className = "bg-gray-800 p-3 rounded-lg flex justify-between items-center";
+        li.innerHTML = `
+          <span>${order.item} from ${order.kitchen} - ₹${order.price}</span>
+          <span class="${statusColor} text-sm">${order.status}</span>
+        `;
+        list.appendChild(li);
+      });
+    }
+
+    // Update welcome message with customer name
+    fetchCustomerName().then(name => {
+      const title = document.getElementById('welcomeTitle');
+      if (title && name) {
+        title.textContent = `Welcome to Eatopia, ${name}!`;
+      }
+    });
+
+    // ------------------- INITIAL LOAD + AUTO REFRESH -------------------
+
+    updateKitchenList();
+    updateOrderHistory();
+
+    // Refresh both every 10 seconds
+    setInterval(() => {
+      updateKitchenList();
+      updateOrderHistory();
+    }, 10000);
+  </script>
+
+</body>
+</html>

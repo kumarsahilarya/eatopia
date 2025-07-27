@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Eatopia - Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-black text-white min-h-screen font-sans p-6">
+  <div class="max-w-3xl mx-auto bg-gray-900 p-6 rounded-2xl shadow-lg">
+    <div class="flex justify-between items-center mb-6">
+      <div class="flex items-center gap-4">
+        <img id="kitchen-photo" src="#" class="w-20 h-20 rounded-full object-cover border-2 border-yellow-400" />
+        <div>
+          <h1 id="kitchen-name" class="text-2xl font-bold text-yellow-400"></h1>
+          <p id="kitchen-email" class="text-gray-300 text-sm"></p>
+          <p id="kitchen-location" class="text-gray-300 text-sm"></p>
+        </div>
+      </div>
+      <button onclick="logout()" class="bg-red-500 hover:bg-red-400 text-white px-4 py-2 rounded-lg">Logout</button>
+    </div>
+
+    <div class="space-y-4">
+      <button onclick="window.location.href='kitchen-orders.html'" class="w-full bg-yellow-400 text-black py-3 rounded-lg font-semibold hover:bg-yellow-300 transition">
+        View Orders
+      </button>
+      <button onclick="window.location.href='/menu'" class="w-full bg-yellow-400 text-black py-3 rounded-lg font-semibold hover:bg-yellow-300 transition">
+        
+        Edit Menu
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const kitchenId = localStorage.getItem("kitchenId");
+    if (!kitchenId) {
+      alert("Please log in first.");
+      window.location.href = "kitchen-login.html";
+    } else {
+      fetch(`http://localhost:5000/api/kitchen/${kitchenId}`)
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById("kitchen-name").textContent = data.kitchen_name;
+          document.getElementById("kitchen-email").textContent = data.email;
+          document.getElementById("kitchen-location").textContent = data.location;
+          document.getElementById("kitchen-photo").src = `http://localhost:5000/uploads/${data.kitchen_photo}`;
+
+        })
+        .catch(err => console.error("Error:", err));
+    }
+
+    function logout() {
+      localStorage.removeItem("kitchenId");
+      window.location.href = "kitchen-login.html";
+    }
+  </script>
+</body>
+</html>
